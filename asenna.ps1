@@ -28,7 +28,8 @@ function Avaa-Salattu([string]$b64, [string]$salasana) {
     $aes.Key = [byte[]]$kv[0..31]; $aes.IV = [byte[]]$kv[32..47]
     [Text.Encoding]::UTF8.GetString($aes.CreateDecryptor().TransformFinalBlock($raw, 16, $raw.Length - 16))
 }
-function Vain-Yllapito($polku) { icacls $polku /inheritance:r /grant:r '*S-1-5-18:F' '*S-1-5-32-544:F' | Out-Null }
+# Omistajaksi SYSTEM: Windowsin OpenSSH hylkää avaimen, jonka omistaja on eri käyttäjä kuin haun ajava SYSTEM
+function Vain-Yllapito($polku) { icacls $polku /setowner '*S-1-5-18' | Out-Null; icacls $polku /inheritance:r /grant:r '*S-1-5-18:F' '*S-1-5-32-544:F' | Out-Null }
 
 $avain = $env:REMOTES_AVAIN
 if (-not $avain) {
